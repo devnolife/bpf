@@ -1,0 +1,6 @@
+Frekuensi,Hz,Spesifikasi,Aktual (dB),Status
+f1 (stopband bawah),770,≤ -40 dB,-58.08016682105708,✓ PASS
+fl (cutoff bawah),920,≥ -2 dB,-3.0398526723070547,✓ PASS (-3dB)
+fc (center),980.0,≈ 0 dB,-3.2676486935445915e-09,✓ PASS
+fu (cutoff atas),1040,≥ -2 dB,-3.0239711976327586,✓ PASS (-3dB)
+f2 (stopband atas),1155,≤ -40 dB,-44.93003403058671,✓ PASS

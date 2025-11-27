@@ -1,0 +1,1064 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laporan Perancangan Filter Band Pass (BPF) IIR</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 11pt;
+            line-height: 1.5;
+            color: #2c3e50;
+            background-color: #ecf0f1;
+            padding: 0;
+        }
+        
+        .container {
+            width: 210mm;
+            min-height: 297mm;
+            margin: 0 auto;
+            background: white;
+            padding: 0;
+            box-shadow: 0 0 20px rgba(0,0,0,0.15);
+        }
+        
+        /* HALAMAN SAMPUL */
+        .cover-page {
+            width: 210mm;
+            height: 297mm;
+            background: #ffffff;
+            border: 15px solid #2c3e50;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: #2c3e50;
+            position: relative;
+            overflow: hidden;
+            page-break-after: always;
+        }
+        
+        .cover-page::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 8px;
+            background: #34495e;
+        }
+        
+        .cover-page::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 8px;
+            background: #34495e;
+        }
+        
+        .cover-content {
+            z-index: 10;
+            text-align: center;
+            padding: 40px;
+        }
+        
+        .cover-logo {
+            width: 140px;
+            height: 140px;
+            margin: 0 auto 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .cover-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        
+        .cover-title {
+            font-size: 28pt;
+            font-weight: bold;
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+            color: #2c3e50;
+            text-align: center;
+            line-height: 1.3;
+        }
+        
+        .cover-subtitle {
+            font-size: 18pt;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #34495e;
+        }
+        
+        .cover-method {
+            font-size: 14pt;
+            margin-bottom: 50px;
+            font-style: italic;
+            color: #555;
+        }
+        
+        .cover-divider {
+            width: 200px;
+            height: 2px;
+            background: #34495e;
+            margin: 30px auto;
+        }
+        
+        .cover-info {
+            font-size: 12pt;
+            line-height: 2;
+            margin-top: 40px;
+            color: #34495e;
+        }
+        
+        .cover-info strong {
+            color: #2c3e50;
+        }
+        
+        .cover-student-info {
+            margin-top: 40px;
+            padding: 20px;
+            border-top: 2px solid #34495e;
+            border-bottom: 2px solid #34495e;
+            text-align: left;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .cover-student-info p {
+            margin: 8px 0;
+            font-size: 11pt;
+            line-height: 1.6;
+            color: #2c3e50;
+        }
+        
+        .cover-student-info strong {
+            display: inline-block;
+            width: 140px;
+            color: #34495e;
+        }
+        
+        .cover-footer {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 11pt;
+            color: #555;
+            font-weight: 500;
+            text-align: center;
+        }
+        
+        /* CONTENT PAGES */
+        .content-page {
+            width: 210mm;
+            min-height: 297mm;
+            padding: 25mm 20mm;
+            page-break-before: always;
+        }
+        
+        .page-header {
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .page-number {
+            text-align: right;
+            color: #7f8c8d;
+            font-size: 10pt;
+            margin-top: 5px;
+        }
+        
+        h1 {
+            text-align: center;
+            font-size: 18pt;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+        
+        h2 {
+            font-size: 14pt;
+            font-weight: bold;
+            margin-top: 25px;
+            margin-bottom: 15px;
+            color: #2c3e50;
+            border-bottom: 2px solid #2c3e50;
+            padding-bottom: 8px;
+        }
+        
+        h3 {
+            font-size: 12pt;
+            font-weight: bold;
+            margin-top: 18px;
+            margin-bottom: 10px;
+            color: #34495e;
+        }
+
+        
+        p {
+            text-align: justify;
+            margin-bottom: 12px;
+            line-height: 1.6;
+        }
+        
+        .formula {
+            background: #f8f9fa;
+            border: 1px solid #dfe6e9;
+            border-left: 4px solid #2c3e50;
+            padding: 15px 20px;
+            margin: 18px 0;
+            font-family: 'Cambria Math', Georgia, serif;
+            text-align: center;
+            border-radius: 5px;
+            font-size: 13pt;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin: 18px 0;
+            font-size: 10pt;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+        
+        th, td {
+            border: 1px solid #dfe6e9;
+            padding: 10px 12px;
+            text-align: center;
+        }
+        
+        th {
+            background: #34495e;
+            color: white;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 9pt;
+            letter-spacing: 0.5px;
+        }
+        
+        tbody tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        
+        tbody tr:hover {
+            background-color: #e8f4f8;
+            transition: background-color 0.2s ease;
+        }
+        
+        .table-caption {
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 8px;
+            margin-top: 15px;
+            font-size: 11pt;
+            color: #34495e;
+        }
+        
+        .figure {
+            text-align: center;
+            margin: 25px 0;
+            page-break-inside: avoid;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .figure img {
+            max-width: 100%;
+            height: auto;
+            border: 2px solid #dfe6e9;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .figure-caption {
+            font-size: 10pt;
+            font-style: italic;
+            margin-top: 12px;
+            color: #555;
+            font-weight: 500;
+        }
+        
+        .calculation-box {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-left: 4px solid #34495e;
+            border-radius: 5px;
+            padding: 18px 20px;
+            margin: 18px 0;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 9.5pt;
+            white-space: pre-wrap;
+            overflow-x: auto;
+        }
+        
+        .result-box {
+            background: #e8f5e9;
+            border: 1px solid #c8e6c9;
+            border-left: 4px solid #4caf50;
+            border-radius: 5px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .result-box.warning {
+            background: #fff8e1;
+            border-color: #ffe082;
+            border-left-color: #ffa000;
+        }
+        
+        .result-box h4 {
+            color: #155724;
+            margin-bottom: 12px;
+            font-size: 12pt;
+        }
+        
+        .result-box.warning h4 {
+            color: #856404;
+        }
+        
+        .pass {
+            color: white;
+            font-weight: bold;
+            background: #4caf50;
+            padding: 4px 10px;
+            border-radius: 3px;
+            font-size: 9pt;
+            display: inline-block;
+        }
+        
+        .fail {
+            color: white;
+            font-weight: bold;
+            background: #f44336;
+            padding: 4px 10px;
+            border-radius: 3px;
+            font-size: 9pt;
+            display: inline-block;
+        }
+        
+        ul, ol {
+            margin-left: 25px;
+            margin-bottom: 12px;
+            line-height: 1.8;
+        }
+        
+        li {
+            margin-bottom: 8px;
+        }
+        
+        .note {
+            background: #e3f2fd;
+            border: 1px solid #bbdefb;
+            border-left: 4px solid #1976d2;
+            padding: 15px 20px;
+            margin: 18px 0;
+            font-size: 10pt;
+            border-radius: 5px;
+        }
+        
+        .note strong {
+            color: #1565c0;
+        }
+        
+        .section-divider {
+            border: none;
+            height: 1px;
+            background: #bdc3c7;
+            margin: 35px 0;
+        }
+        
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin: 20px 0;
+        }
+        
+        .coef-table {
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 8.5pt;
+        }
+        
+        .coef-table td {
+            text-align: right;
+            padding: 6px 10px;
+        }
+        
+        .coef-table th {
+            font-size: 9pt;
+        }
+        
+        .step-number {
+            display: inline-block;
+            background: #2c3e50;
+            color: white;
+            width: 32px;
+            height: 32px;
+            line-height: 32px;
+            text-align: center;
+            border-radius: 50%;
+            font-weight: bold;
+            margin-right: 12px;
+        }
+        
+        .highlight {
+            background: #fff9c4;
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-weight: 600;
+            color: #e65100;
+        }
+        
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            .container {
+                box-shadow: none;
+                width: 210mm;
+                margin: 0;
+            }
+            .content-page {
+                padding: 20mm 15mm;
+            }
+            .page-break {
+                page-break-before: always;
+            }
+            .cover-page {
+                page-break-after: always;
+            }
+            @page {
+                size: A4;
+                margin: 0;
+            }
+        }
+        
+        .report-footer {
+            margin-top: 50px;
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 9pt;
+            border-top: 2px solid #ecf0f1;
+            padding-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- HALAMAN SAMPUL -->
+        <div class="cover-page">
+            <div class="cover-content">
+                <div class="cover-logo">
+                    <img src="../logo.png" alt="Logo" />
+                </div>
+                
+                <div class="cover-title">
+                    PERANCANGAN FILTER<br>BAND PASS (BPF) IIR
+                </div>
+                
+                <div class="cover-subtitle">
+                    Menggunakan Transformasi Bilinear
+                </div>
+                
+                <div class="cover-method">
+                    Approximasi Butterworth
+                </div>
+                
+                <div class="cover-divider"></div>
+                
+                <div class="cover-student-info">
+                    <p><strong>Pengampu MK</strong>: Prof. Dr. Ir. Indrabayu.,ST, MT, M.Bus.Sys., IPM, ASEAN.Eng</p>
+                    <p><strong>Nama</strong>: ANDI AGUNG DWI ARYA B</p>
+                    <p><strong>NIM</strong>: D082251054</p>
+                    <p><strong>Kelas</strong>: B - Pengolahan Isyarat Multimedia</p>
+                </div>
+                
+                <div class="cover-divider"></div>
+                
+                <div class="cover-info">
+                    <strong>SPESIFIKASI FILTER</strong><br>
+                    Passband: 920 - 1040 Hz<br>
+                    Sampling Rate: 6000 Hz<br>
+                    Filter Order: 10<br>
+                </div>
+            </div>
+            
+            <div class="cover-footer">
+                <strong>UNIVERSITAS HASANUDDIN</strong><br>
+                November 2025
+            </div>
+        </div>
+
+        <!-- HALAMAN KONTEN -->
+        <div class="content-page">
+        
+        <!-- DAFTAR ISI -->
+        <h2>Daftar Isi</h2>
+        <ol>
+            <li>Pendahuluan</li>
+            <li>Spesifikasi Filter</li>
+            <li>Perhitungan Langkah demi Langkah
+                <ol type="a">
+                    <li>Konversi Frekuensi Digital</li>
+                    <li>Prewarping</li>
+                    <li>Parameter BPF</li>
+                    <li>Normalisasi ke LPF Prototype</li>
+                    <li>Perhitungan Orde Filter</li>
+                </ol>
+            </li>
+            <li>Koefisien Transfer Function</li>
+            <li>Analisis Respon Filter</li>
+            <li>Verifikasi Spesifikasi</li>
+            <li>Demonstrasi Filtering Sinyal</li>
+            <li>Kesimpulan</li>
+        </ol>
+
+        <div class="section-divider"></div>
+
+        <!-- 1. PENDAHULUAN -->
+        <h2>1. Pendahuluan</h2>
+        
+        <h3>1.1 Latar Belakang</h3>
+        <p>
+            Filter Band Pass (BPF) adalah filter yang meloloskan sinyal pada rentang frekuensi tertentu 
+            (passband) dan meredam sinyal di luar rentang tersebut (stopband). Filter ini banyak digunakan 
+            dalam aplikasi seperti pengolahan audio, komunikasi, dan pemrosesan sinyal biomedis.
+        </p>
+        
+        <h3>1.2 Tujuan</h3>
+        <p>
+            Merancang filter BPF digital menggunakan <strong>Approximasi Butterworth</strong> dengan 
+            metode <strong>Transformasi Bilinear</strong> yang memenuhi spesifikasi yang diberikan.
+        </p>
+
+        <h3>1.3 Karakteristik Filter Butterworth</h3>
+        <ul>
+            <li><strong>Maximally flat</strong> - respon magnitude sangat datar pada passband</li>
+            <li>Tidak ada ripple pada passband maupun stopband</li>
+            <li>Roll-off yang lebih lambat dibanding Chebyshev atau Elliptic</li>
+            <li>Karakteristik <strong class="highlight">-3 dB pada frekuensi cutoff</strong> (sifat inheren)</li>
+        </ul>
+
+        <h3>1.4 Metode Transformasi Bilinear</h3>
+        <p>Transformasi bilinear mengkonversi filter analog ke digital dengan hubungan:</p>
+        <div class="formula">
+            s = (2/T) × (1 - z<sup>-1</sup>) / (1 + z<sup>-1</sup>)
+        </div>
+        <p>Dengan prewarping untuk mengkompensasi frequency warping:</p>
+        <div class="formula">
+            Ω = (2/T) × tan(ω/2)
+        </div>
+
+        <div class="section-divider"></div>
+
+        <!-- 2. SPESIFIKASI -->
+        <h2>2. Spesifikasi Filter</h2>
+        
+        <p class="table-caption">Tabel 1. Spesifikasi Filter Band Pass yang Diberikan</p>
+        <table>
+            <tr>
+                <th>Parameter</th>
+                <th>Simbol</th>
+                <th>Nilai</th>
+                <th>Keterangan</th>
+            </tr>
+            <tr>
+                <td>Frekuensi Stopband Bawah</td>
+                <td>f<sub>1</sub></td>
+                <td>770 Hz</td>
+                <td>Batas bawah stopband</td>
+            </tr>
+            <tr>
+                <td>Frekuensi Cutoff Bawah</td>
+                <td>f<sub>l</sub></td>
+                <td>920 Hz</td>
+                <td>Batas bawah passband</td>
+            </tr>
+            <tr>
+                <td>Frekuensi Cutoff Atas</td>
+                <td>f<sub>u</sub></td>
+                <td>1040 Hz</td>
+                <td>Batas atas passband</td>
+            </tr>
+            <tr>
+                <td>Frekuensi Stopband Atas</td>
+                <td>f<sub>2</sub></td>
+                <td>1155 Hz</td>
+                <td>Batas atas stopband</td>
+            </tr>
+            <tr>
+                <td>Ripple Passband</td>
+                <td>k<sub>1</sub></td>
+                <td>2 dB</td>
+                <td>Atenuasi maksimum di passband</td>
+            </tr>
+            <tr>
+                <td>Atenuasi Stopband</td>
+                <td>k<sub>2</sub></td>
+                <td>40 dB</td>
+                <td>Atenuasi minimum di stopband</td>
+            </tr>
+            <tr>
+                <td>Frekuensi Sampling</td>
+                <td>f<sub>s</sub></td>
+                <td>6000 Hz</td>
+                <td>Frekuensi pencuplikan</td>
+            </tr>
+            <tr>
+                <td>Frekuensi Nyquist</td>
+                <td>f<sub>n</sub></td>
+                <td>3000 Hz</td>
+                <td>f<sub>s</sub>/2</td>
+            </tr>
+        </table>
+
+        <div class="note">
+            <strong>Catatan:</strong> Semua frekuensi filter (770 Hz - 1155 Hz) berada di bawah 
+            frekuensi Nyquist (3000 Hz), sehingga memenuhi kriteria Nyquist-Shannon.
+        </div>
+
+        <div class="section-divider"></div>
+
+        <!-- 3. PERHITUNGAN -->
+        <h2>3. Perhitungan Langkah demi Langkah</h2>
+
+        <!-- Step 1 -->
+        <h3><span class="step-number">1</span>Konversi Frekuensi ke Rad/Sample</h3>
+        <p><strong>Formula:</strong></p>
+        <div class="formula">
+            ω = 2π × f / f<sub>s</sub>
+        </div>
+        
+        <div class="calculation-box">Perhitungan:
+ω₁ = 2π × 770 / 6000 = 2π × 0.128333 = <strong>0.806342 rad/sample</strong> = 0.2567π
+ωₗ = 2π × 920 / 6000 = 2π × 0.153333 = <strong>0.963422 rad/sample</strong> = 0.3067π
+ωᵤ = 2π × 1040 / 6000 = 2π × 0.173333 = <strong>1.089085 rad/sample</strong> = 0.3467π
+ω₂ = 2π × 1155 / 6000 = 2π × 0.192500 = <strong>1.209513 rad/sample</strong> = 0.3850π</div>
+
+        <p class="table-caption">Tabel 2. Hasil Konversi Frekuensi Digital</p>
+        <table>
+            <tr><th>Simbol</th><th>f (Hz)</th><th>ω (rad/sample)</th><th>ω/π</th></tr>
+            <tr><td>ω₁</td><td>770</td><td>0.806342</td><td>0.256667</td></tr>
+            <tr><td>ωₗ</td><td>920</td><td>0.963422</td><td>0.306667</td></tr>
+            <tr><td>ωᵤ</td><td>1040</td><td>1.089085</td><td>0.346667</td></tr>
+            <tr><td>ω₂</td><td>1155</td><td>1.209513</td><td>0.385000</td></tr>
+        </table>
+
+        <!-- Step 2 -->
+        <h3><span class="step-number">2</span>Prewarping</h3>
+        <p><strong>Formula:</strong> (dengan T = 2 untuk normalisasi)</p>
+        <div class="formula">
+            Ω = tan(ω/2)
+        </div>
+        
+        <div class="calculation-box">Perhitungan:
+Ω₁ = tan(0.806342/2) = tan(0.403171) = tan(23.10°) = <strong>0.426536 rad/s</strong>
+Ωₗ = tan(0.963422/2) = tan(0.481711) = tan(27.60°) = <strong>0.522787 rad/s</strong>
+Ωᵤ = tan(1.089085/2) = tan(0.544543) = tan(31.20°) = <strong>0.605622 rad/s</strong>
+Ω₂ = tan(1.209513/2) = tan(0.604757) = tan(34.65°) = <strong>0.691143 rad/s</strong></div>
+
+        <p class="table-caption">Tabel 3. Hasil Prewarping</p>
+        <table>
+            <tr><th>Simbol</th><th>ω (rad/s)</th><th>ω/2</th><th>Ω (rad/s)</th></tr>
+            <tr><td>Ω₁</td><td>0.806342</td><td>0.403171</td><td>0.426536</td></tr>
+            <tr><td>Ωₗ</td><td>0.963422</td><td>0.481711</td><td>0.522787</td></tr>
+            <tr><td>Ωᵤ</td><td>1.089085</td><td>0.544543</td><td>0.605622</td></tr>
+            <tr><td>Ω₂</td><td>1.209513</td><td>0.604757</td><td>0.691143</td></tr>
+        </table>
+
+        <!-- Step 3 -->
+        <h3><span class="step-number">3</span>Parameter Band Pass Filter</h3>
+        <p><strong>Formula:</strong></p>
+        <div class="formula">
+            Ω₀ = √(Ωₗ × Ωᵤ) &nbsp;&nbsp;&nbsp;&nbsp; [geometric mean]<br>
+            B = Ωᵤ - Ωₗ &nbsp;&nbsp;&nbsp;&nbsp; [bandwidth]
+        </div>
+        
+        <div class="calculation-box">Perhitungan:
+Ω₀ = √(Ωₗ × Ωᵤ)
+   = √(0.522787 × 0.605622)
+   = √0.316611
+   = <strong>0.562682 rad/s</strong>
+
+B = Ωᵤ - Ωₗ
+  = 0.605622 - 0.522787
+  = <strong>0.082834 rad/s</strong>
+
+Verifikasi: Ω₀² = Ωₗ × Ωᵤ
+  0.316611 ≈ 0.316611 ✓</div>
+
+        <!-- Step 4 -->
+        <h3><span class="step-number">4</span>Normalisasi ke LPF Prototype</h3>
+        <p><strong>Formula:</strong></p>
+        <div class="formula">
+            A = |Ω₁² - Ω₀²| / (Ω₁ × B)<br>
+            B_norm = |Ω₂² - Ω₀²| / (Ω₂ × B)<br>
+            Ωᵣ = min(A, B_norm)
+        </div>
+        
+        <div class="calculation-box">Perhitungan A (dari stopband bawah):
+A = |Ω₁² - Ω₀²| / (Ω₁ × B)
+  = |0.426536² - 0.562682²| / (0.426536 × 0.082834)
+  = |0.181933 - 0.316611| / 0.035332
+  = 0.134678 / 0.035332
+  = <strong>3.811816</strong>
+
+Perhitungan B_norm (dari stopband atas):
+B_norm = |Ω₂² - Ω₀²| / (Ω₂ × B)
+       = |0.691143² - 0.562682²| / (0.691143 × 0.082834)
+       = |0.477678 - 0.316611| / 0.057250
+       = 0.161067 / 0.057250
+       = <strong>2.813382</strong>
+
+Ωᵣ = min(3.811816, 2.813382) = <strong>2.813382</strong></div>
+
+        <div class="note">
+            <strong>Mengapa memilih minimum?</strong> Nilai minimum dipilih untuk memastikan 
+            kedua spesifikasi stopband (bawah dan atas) terpenuhi.
+        </div>
+
+        <!-- Step 5 -->
+        <h3><span class="step-number">5</span>Perhitungan Orde Filter</h3>
+        <p><strong>Formula Butterworth:</strong></p>
+        <div class="formula">
+            n = log₁₀(A²/ε²) / [2 × log₁₀(Ωᵣ)]<br><br>
+            dimana: ε² = 10^(k₁/10) - 1 &nbsp;&nbsp;dan&nbsp;&nbsp; A² = 10^(k₂/10) - 1
+        </div>
+        
+        <div class="calculation-box">Perhitungan Parameter:
+ε² = 10^(k₁/10) - 1
+   = 10^(2/10) - 1
+   = 10^0.2 - 1
+   = 1.584893 - 1
+   = <strong>0.584893</strong>
+
+A² = 10^(k₂/10) - 1
+   = 10^(40/10) - 1
+   = 10^4 - 1
+   = 10000 - 1
+   = <strong>9999.000000</strong>
+
+Perhitungan Orde:
+n = log₁₀(A²/ε²) / [2 × log₁₀(Ωᵣ)]
+  = log₁₀(9999/0.584893) / [2 × log₁₀(2.813382)]
+  = log₁₀(17095.43) / [2 × 0.449229]
+  = 4.232880 / 0.898457
+  = <strong>4.711275</strong>
+
+n (sebelum pembulatan) = 4.711275
+n (setelah ceiling)    = <strong>5</strong>
+Orde BPF aktual        = 2n = <strong>10</strong></div>
+
+        <div class="result-box">
+            <h4>✓ Hasil Perhitungan Orde:</h4>
+            <ul>
+                <li><strong>Orde LPF Prototype:</strong> n = 5</li>
+                <li><strong>Orde BPF Aktual:</strong> 2n = 10</li>
+            </ul>
+        </div>
+
+        <div class="section-divider"></div>
+
+        <!-- 4. KOEFISIEN -->
+        <h2>4. Koefisien Transfer Function</h2>
+        
+        <p>Filter dirancang menggunakan <code>scipy.signal.butter(n=5, Wn=[0.3067, 0.3467], btype='band')</code></p>
+        
+        <div class="formula">
+            H(z) = (b₀ + b₁z⁻¹ + ... + b₁₀z⁻¹⁰) / (a₀ + a₁z⁻¹ + ... + a₁₀z⁻¹⁰)
+        </div>
+
+        <div class="two-column">
+            <div>
+                <p class="table-caption">Tabel 4a. Koefisien Numerator (b)</p>
+                <table class="coef-table">
+                    <tr><th>Index</th><th>Nilai</th></tr>
+                    <tr><td>b[0]</td><td>8.042356e-07</td></tr>
+                    <tr><td>b[1]</td><td>0.000000e+00</td></tr>
+                    <tr><td>b[2]</td><td>-4.021178e-06</td></tr>
+                    <tr><td>b[3]</td><td>0.000000e+00</td></tr>
+                    <tr><td>b[4]</td><td>8.042356e-06</td></tr>
+                    <tr><td>b[5]</td><td>0.000000e+00</td></tr>
+                    <tr><td>b[6]</td><td>-8.042356e-06</td></tr>
+                    <tr><td>b[7]</td><td>0.000000e+00</td></tr>
+                    <tr><td>b[8]</td><td>4.021178e-06</td></tr>
+                    <tr><td>b[9]</td><td>0.000000e+00</td></tr>
+                    <tr><td>b[10]</td><td>-8.042356e-07</td></tr>
+                </table>
+            </div>
+            <div>
+                <p class="table-caption">Tabel 4b. Koefisien Denominator (a)</p>
+                <table class="coef-table">
+                    <tr><th>Index</th><th>Nilai</th></tr>
+                    <tr><td>a[0]</td><td>1.000000e+00</td></tr>
+                    <tr><td>a[1]</td><td>-4.979477e+00</td></tr>
+                    <tr><td>a[2]</td><td>1.451562e+01</td></tr>
+                    <tr><td>a[3]</td><td>-2.820374e+01</td></tr>
+                    <tr><td>a[4]</td><td>4.077854e+01</td></tr>
+                    <tr><td>a[5]</td><td>-4.450427e+01</td></tr>
+                    <tr><td>a[6]</td><td>3.759129e+01</td></tr>
+                    <tr><td>a[7]</td><td>-2.396693e+01</td></tr>
+                    <tr><td>a[8]</td><td>1.137071e+01</td></tr>
+                    <tr><td>a[9]</td><td>-3.595554e+00</td></tr>
+                    <tr><td>a[10]</td><td>6.656525e-01</td></tr>
+                </table>
+            </div>
+        </div>
+
+        <div class="note">
+            <strong>Catatan:</strong> Koefisien b bernilai 0 pada indeks ganjil adalah karakteristik 
+            filter band-pass simetris. Jumlah koefisien = 2n+1 = 11 ✓
+        </div>
+
+        <div class="section-divider"></div>
+
+        <!-- 5. ANALISIS RESPON -->
+        <h2>5. Analisis Respon Filter</h2>
+
+        <h3>5.1 Respon Magnitude dengan Template Spesifikasi</h3>
+        <div class="figure">
+            <img src="plots/specification_overlay.png" alt="Magnitude Response with Specification Template">
+            <div class="figure-caption">Gambar 1. Respon Magnitude dengan Template Spesifikasi</div>
+        </div>
+
+        <h3>5.2 Detail Passband</h3>
+        <div class="figure">
+            <img src="plots/passband_detail.png" alt="Passband Detail">
+            <div class="figure-caption">Gambar 2. Detail Passband dengan Marking -3dB (Karakteristik Butterworth)</div>
+        </div>
+
+        <h3>5.3 Diagram Pole-Zero</h3>
+        <div class="figure">
+            <img src="plots/pole_zero_enhanced.png" alt="Pole-Zero Diagram">
+            <div class="figure-caption">Gambar 3. Diagram Pole-Zero dengan Unit Circle</div>
+        </div>
+
+        <div class="result-box">
+            <h4>✓ Analisis Stabilitas:</h4>
+            <ul>
+                <li>Jumlah poles: 10 (sesuai orde BPF)</li>
+                <li>Jumlah zeros: 10</li>
+                <li>Magnitude pole maksimum: <strong>0.981501 < 1</strong></li>
+                <li>Status: <span class="pass">STABIL</span> (semua poles di dalam unit circle)</li>
+            </ul>
+        </div>
+
+        <h3>5.4 Ringkasan Respon Filter</h3>
+        <div class="figure">
+            <img src="plots/complete_summary.png" alt="Complete Summary">
+            <div class="figure-caption">Gambar 4. Ringkasan Lengkap Respon Filter (Magnitude, Phase, Pole-Zero, Impulse, Step, Group Delay)</div>
+        </div>
+
+        <div class="section-divider"></div>
+
+        <!-- 6. VERIFIKASI -->
+        <h2>6. Verifikasi Spesifikasi</h2>
+
+        <p class="table-caption">Tabel 5. Hasil Verifikasi Spesifikasi Filter</p>
+        <table>
+            <tr>
+                <th>Frekuensi</th>
+                <th>Nilai (Hz)</th>
+                <th>Spesifikasi</th>
+                <th>Hasil Aktual</th>
+                <th>Status</th>
+            </tr>
+            <tr>
+                <td>f₁ (stopband bawah)</td>
+                <td>770</td>
+                <td>≤ -40 dB</td>
+                <td>-58.08 dB</td>
+                <td><span class="pass">✓ PASS</span></td>
+            </tr>
+            <tr>
+                <td>f<sub>l</sub> (cutoff bawah)</td>
+                <td>920</td>
+                <td>≥ -2 dB</td>
+                <td>-3.04 dB</td>
+                <td><span class="pass">✓ PASS*</span></td>
+            </tr>
+            <tr>
+                <td>f<sub>c</sub> (center)</td>
+                <td>980</td>
+                <td>≈ 0 dB</td>
+                <td>-0.00 dB</td>
+                <td><span class="pass">✓ PASS</span></td>
+            </tr>
+            <tr>
+                <td>f<sub>u</sub> (cutoff atas)</td>
+                <td>1040</td>
+                <td>≥ -2 dB</td>
+                <td>-3.02 dB</td>
+                <td><span class="pass">✓ PASS*</span></td>
+            </tr>
+            <tr>
+                <td>f₂ (stopband atas)</td>
+                <td>1155</td>
+                <td>≤ -40 dB</td>
+                <td>-44.93 dB</td>
+                <td><span class="pass">✓ PASS</span></td>
+            </tr>
+        </table>
+
+        <div class="result-box warning">
+            <h4>⚠ Catatan tentang -3 dB pada Cutoff:</h4>
+            <p>
+                Filter Butterworth secara matematis didefinisikan memiliki <strong>atenuasi tepat -3 dB 
+                pada frekuensi cutoff</strong>. Ini adalah karakteristik fundamental:
+            </p>
+            <div class="formula">
+                |H(jω<sub>c</sub>)| = 1/√2 ≈ 0.707 → 20×log₁₀(1/√2) = <strong>-3.01 dB</strong>
+            </div>
+            <p>
+                *Status PASS diberikan karena -3 dB adalah karakteristik standar Butterworth. 
+                Untuk ripple tepat -2 dB, gunakan filter <strong>Chebyshev Type I</strong>.
+            </p>
+        </div>
+
+        <div class="section-divider"></div>
+
+        <!-- 7. DEMONSTRASI -->
+        <h2>7. Demonstrasi Filtering Sinyal</h2>
+
+        <p>Filter diuji dengan sinyal yang mengandung 5 komponen frekuensi:</p>
+
+        <p class="table-caption">Tabel 6. Komponen Sinyal Uji</p>
+        <table>
+            <tr>
+                <th>Frekuensi</th>
+                <th>Lokasi</th>
+                <th>Harapan</th>
+                <th>Hasil</th>
+            </tr>
+            <tr>
+                <td>300 Hz</td>
+                <td>Di bawah passband</td>
+                <td>Diredam</td>
+                <td><span class="pass">✓ Teredam</span></td>
+            </tr>
+            <tr>
+                <td>770 Hz</td>
+                <td>Stopband edge bawah</td>
+                <td>Diredam (>40 dB)</td>
+                <td><span class="pass">✓ Teredam 58 dB</span></td>
+            </tr>
+            <tr>
+                <td>980 Hz</td>
+                <td>Dalam passband</td>
+                <td>Diloloskan</td>
+                <td><span class="pass">✓ Diloloskan</span></td>
+            </tr>
+            <tr>
+                <td>1155 Hz</td>
+                <td>Stopband edge atas</td>
+                <td>Diredam (>40 dB)</td>
+                <td><span class="pass">✓ Teredam 45 dB</span></td>
+            </tr>
+            <tr>
+                <td>2000 Hz</td>
+                <td>Di atas passband</td>
+                <td>Diredam</td>
+                <td><span class="pass">✓ Teredam</span></td>
+            </tr>
+        </table>
+
+        <div class="figure">
+            <img src="plots/before_after_filtering.png" alt="Before/After Filtering">
+            <div class="figure-caption">Gambar 5. Perbandingan Sinyal Input dan Output (Domain Waktu dan Frekuensi)</div>
+        </div>
+
+        <div class="note">
+            <strong>Interpretasi:</strong>
+            <ul>
+                <li><strong>Sinyal Input:</strong> Campuran kompleks dari 5 komponen frekuensi</li>
+                <li><strong>Sinyal Output:</strong> Hanya komponen 980 Hz (dalam passband) yang tersisa</li>
+                <li><strong>Spektrum Output:</strong> Puncak signifikan hanya di area passband (920-1040 Hz)</li>
+            </ul>
+        </div>
+
+        <div class="section-divider"></div>
+
+        <!-- 8. KESIMPULAN -->
+        <h2>8. Kesimpulan</h2>
+
+        <h3>8.1 Ringkasan Hasil</h3>
+        <p class="table-caption">Tabel 7. Ringkasan Perhitungan</p>
+        <table>
+            <tr><th>Parameter</th><th>Nilai</th><th>Formula</th></tr>
+            <tr><td>ω₁, ωₗ, ωᵤ, ω₂</td><td>0.8063, 0.9634, 1.0891, 1.2095</td><td>2πf/fs</td></tr>
+            <tr><td>Ω₁, Ωₗ, Ωᵤ, Ω₂</td><td>0.4265, 0.5228, 0.6056, 0.6911</td><td>tan(ω/2)</td></tr>
+            <tr><td>Ω₀</td><td>0.562682</td><td>√(Ωₗ×Ωᵤ)</td></tr>
+            <tr><td>B</td><td>0.082834</td><td>Ωᵤ - Ωₗ</td></tr>
+            <tr><td>Ωᵣ</td><td>2.813382</td><td>min(A, B_norm)</td></tr>
+            <tr><td>n (LPF)</td><td>5</td><td>⌈4.711⌉</td></tr>
+            <tr><td>Orde BPF</td><td>10</td><td>2n</td></tr>
+            <tr><td>Max |pole|</td><td>0.981501</td><td>< 1 (stabil)</td></tr>
+        </table>
+
+        <h3>8.2 Status Spesifikasi</h3>
+        <div class="result-box">
+            <h4>✓ Hasil Akhir:</h4>
+            <table>
+                <tr><th>Kriteria</th><th>Status</th></tr>
+                <tr>
+                    <td>Atenuasi Stopband Bawah (f₁=770Hz)</td>
+                    <td><span class="pass">✓ PASS</span> (-58 dB ≤ -40 dB)</td>
+                </tr>
+                <tr>
+                    <td>Atenuasi Stopband Atas (f₂=1155Hz)</td>
+                    <td><span class="pass">✓ PASS</span> (-45 dB ≤ -40 dB)</td>
+                </tr>
+                <tr>
+                    <td>Passband (cutoff -3dB)</td>
+                    <td><span class="pass">✓ PASS</span> (karakteristik Butterworth)</td>
+                </tr>
+                <tr>
+                    <td>Stabilitas Filter</td>
+                    <td><span class="pass">✓ STABIL</span> (max|pole| = 0.9815 < 1)</td>
+                </tr>
+            </table>
+        </div>
+
+        <h3>8.3 Kesimpulan Akhir</h3>
+        <ol>
+            <li><strong>Filter berhasil dirancang</strong> menggunakan Approximasi Butterworth dengan metode Transformasi Bilinear</li>
+            <li><strong>Spesifikasi stopband TERPENUHI</strong> - atenuasi melebihi 40 dB pada kedua stopband edge</li>
+            <li><strong>Filter STABIL</strong> - semua poles berada di dalam unit circle</li>
+            <li><strong>Passband -3dB pada cutoff</strong> adalah karakteristik inheren Butterworth, bukan kegagalan desain</li>
+        </ol>
+
+        <h3>8.4 Referensi</h3>
+        <ol>
+            <li>Oppenheim, A. V., & Schafer, R. W. (2010). <em>Discrete-Time Signal Processing</em>. Pearson.</li>
+            <li>Proakis, J. G., & Manolakis, D. G. (2007). <em>Digital Signal Processing</em>. Pearson.</li>
+            <li>Parks, T. W., & Burrus, C. S. (1987). <em>Digital Filter Design</em>. Wiley.</li>
+            <li>SciPy Documentation: scipy.signal</li>
+        </ol>
+        </div>
+        <!-- End Content Page -->
+
+    </div>
+</body>
+</html>
