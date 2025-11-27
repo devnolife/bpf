@@ -431,27 +431,310 @@
         }
         
         @media print {
-            body {
-                background: white;
-                padding: 0;
+            @page {
+                size: A4 portrait;
+                margin: 15mm;
             }
+            
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            
+            html, body {
+                width: 210mm;
+                height: 297mm;
+                margin: 0;
+                padding: 0;
+                background: white;
+                color: #2c3e50;
+            }
+            
             .container {
                 box-shadow: none;
                 width: 210mm;
+                max-width: 210mm;
+                margin: 0 auto;
+                padding: 0;
+                background: white;
+            }
+            
+            .cover-page {
+                width: 210mm;
+                height: 297mm;
+                page-break-after: always;
                 margin: 0;
+                padding: 40mm 25mm;
+                box-sizing: border-box;
+                border: 10px solid #2c3e50 !important;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
             }
+            
+            .cover-page::before,
+            .cover-page::after {
+                background: #34495e !important;
+            }
+            
+            .cover-content {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+            }
+            
+            .cover-logo {
+                width: 90px;
+                height: 90px;
+                margin-bottom: 15px;
+            }
+            
+            .cover-title {
+                font-size: 18pt;
+                color: #2c3e50 !important;
+                margin-bottom: 10px;
+                line-height: 1.3;
+            }
+            
+            .cover-subtitle {
+                font-size: 14pt;
+                color: #34495e !important;
+                margin-bottom: 8px;
+            }
+            
+            .cover-method {
+                font-size: 11pt;
+                margin-bottom: 20px;
+                color: #555 !important;
+            }
+            
+            .cover-divider {
+                background: #34495e !important;
+                margin: 15px auto;
+                width: 180px;
+            }
+            
+            .cover-student-info {
+                font-size: 9pt;
+                padding: 10px 15px;
+                border-top: 2px solid #34495e !important;
+                border-bottom: 2px solid #34495e !important;
+                max-width: 450px;
+                margin: 15px auto;
+            }
+            
+            .cover-student-info p {
+                color: #2c3e50 !important;
+                margin: 5px 0;
+                line-height: 1.5;
+            }
+            
+            .cover-student-info strong {
+                width: 120px;
+            }
+            
+            .cover-info {
+                font-size: 9pt;
+                color: #34495e !important;
+                line-height: 1.8;
+            }
+            
+            .cover-footer {
+                color: #555 !important;
+                font-size: 10pt;
+                position: static;
+                margin-top: auto;
+            }
+            
             .content-page {
-                padding: 20mm 15mm;
+                width: 210mm;
+                padding: 0;
+                page-break-before: auto;
+                box-sizing: border-box;
             }
+            
+            h1, h2, h3 {
+                color: #2c3e50 !important;
+            }
+            
+            h2 {
+                page-break-after: avoid;
+                margin-top: 12px;
+                margin-bottom: 10px;
+                border-bottom: 2px solid #2c3e50 !important;
+                font-size: 13pt;
+                padding-bottom: 5px;
+            }
+            
+            h3 {
+                page-break-after: avoid;
+                color: #34495e !important;
+                font-size: 11pt;
+                margin-top: 10px;
+                margin-bottom: 8px;
+            }
+            
+            p, li, td {
+                color: #2c3e50 !important;
+                font-size: 10pt;
+                line-height: 1.5;
+            }
+            
+            p {
+                margin-bottom: 8px;
+            }
+            
+            li {
+                margin-bottom: 5px;
+            }
+            
+            ol, ul {
+                margin: 8px 0;
+                padding-left: 20px;
+            }
+            
+            .figure {
+                page-break-inside: avoid;
+                margin: 10px 0;
+                background: #f8f9fa !important;
+                box-shadow: none;
+                padding: 8px;
+            }
+            
+            .figure img {
+                max-width: 100%;
+                height: auto;
+                page-break-inside: avoid;
+                border: 1px solid #dfe6e9 !important;
+            }
+            
+            .figure-caption {
+                color: #555 !important;
+                font-size: 9pt;
+                margin-top: 6px;
+            }
+            
+            table {
+                page-break-inside: avoid;
+                font-size: 8pt;
+                margin: 10px 0;
+                width: 100%;
+            }
+            
+            th {
+                background: #34495e !important;
+                color: white !important;
+                -webkit-print-color-adjust: exact;
+                padding: 6px 8px;
+                font-size: 8pt;
+            }
+            
+            td {
+                border: 1px solid #dfe6e9 !important;
+                padding: 6px 8px;
+                font-size: 8pt;
+            }
+            
+            .formula {
+                background: #f8f9fa !important;
+                border-left: 3px solid #2c3e50 !important;
+                page-break-inside: avoid;
+                margin: 10px 0;
+                padding: 10px 12px;
+                font-size: 11pt;
+            }
+            
+            .calculation-box {
+                background: #f8f9fa !important;
+                border-left: 3px solid #34495e !important;
+                page-break-inside: avoid;
+                box-shadow: none;
+                margin: 10px 0;
+                padding: 10px 12px;
+                font-size: 8pt;
+                line-height: 1.4;
+            }
+            
+            .result-box {
+                background: #e8f5e9 !important;
+                border-left: 3px solid #4caf50 !important;
+                page-break-inside: avoid;
+                box-shadow: none;
+                margin: 12px 0;
+            }
+            
+            .result-box.warning {
+                background: #fff8e1 !important;
+                border-left-color: #ffa000 !important;
+            }
+            
+            .result-box h4 {
+                color: #155724 !important;
+            }
+            
+            .note {
+                background: #e3f2fd !important;
+                border-left: 3px solid #1976d2 !important;
+                page-break-inside: avoid;
+                box-shadow: none;
+                margin: 12px 0;
+            }
+            
+            .note strong {
+                color: #1565c0 !important;
+            }
+            
+            .pass {
+                background: #4caf50 !important;
+                color: white !important;
+            }
+            
+            .fail {
+                background: #f44336 !important;
+                color: white !important;
+            }
+            
+            .step-number {
+                background: #2c3e50 !important;
+                color: white !important;
+                -webkit-print-color-adjust: exact;
+            }
+            
+            .highlight {
+                background: #fff9c4 !important;
+                color: #e65100 !important;
+            }
+            
+            .section-divider {
+                background: #bdc3c7 !important;
+                margin: 20px 0;
+            }
+            
+            .two-column {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 15px;
+                page-break-inside: avoid;
+            }
+            
             .page-break {
                 page-break-before: always;
             }
-            .cover-page {
-                page-break-after: always;
+            
+            .report-footer {
+                margin-top: 25px;
+                color: #7f8c8d !important;
+                border-top: 2px solid #ecf0f1 !important;
             }
-            @page {
-                size: A4;
-                margin: 0;
+            
+            code {
+                color: #e74c3c !important;
+            }
+            
+            strong {
+                color: inherit !important;
             }
         }
         
